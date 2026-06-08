@@ -729,3 +729,95 @@ button:hover {
   color: var(--text-main);
   transform: translateY(-2px);
 }
+
+/* ================= FOOTER ================= */
+
+.footer {
+  margin-top: 80px;
+  background: #d4e4dc;
+  border-top: 1px solid rgba(44,39,36,0.06);
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+
+  padding: 60px 24px;
+
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  gap: 50px;
+}
+
+.footer-brand h3 {
+  margin-top: 12px;
+  margin-bottom: 10px;
+}
+
+.footer-brand p {
+  max-width: 280px;
+  line-height: 1.7;
+  color: var(--text-muted);
+}
+
+.footer-logo {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+}
+
+.footer-column {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footer-column h4 {
+  margin-bottom: 8px;
+}
+
+.footer-column a,
+.footer-column p {
+  color: var(--text-muted);
+  transition: 0.25s ease;
+}
+
+.footer-column a:hover {
+  color: var(--matcha);
+}
+
+.footer-bottom {
+  text-align: center;
+  padding: 20px;
+
+  border-top: 1px solid rgba(44,39,36,0.05);
+
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+/* Mobile */
+
+@media (max-width: 768px) {
+  .footer-content {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .footer-brand p {
+    margin: 0 auto;
+  }
+}
+
+.layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* THIS is the magic line */
+.page-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}

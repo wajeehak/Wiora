@@ -1,15 +1,23 @@
 import Navbar from "./Navbar";
 import CartDrawer from "./CartDrawer";
+import Footer from "./Footer";
 
 function Layout({ children }) {
   return (
-    <div>
+    <div className="layout">
+      {/* 🌷 TOP NAV */}
       <Navbar />
+
+      {/* 🧺 CART OVERLAY (should sit above everything) */}
       <CartDrawer />
 
-      <div className="page-container">
+      {/* 📄 PAGE CONTENT */}
+      <main className="page-content">
         {children}
-      </div>
+      </main>
+
+      {/* 🌸 FOOTER (always last) */}
+      <Footer />
     </div>
   );
 }
