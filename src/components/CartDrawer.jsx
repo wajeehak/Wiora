@@ -1,17 +1,17 @@
-import { AnimatePresence, motion } from "framer-motion";
 import { useCart } from "../context/CartContext";
+import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
-function CartDrawer() {
+function CartDrawer({ open, setOpen }) {
   const {
-    cart,
-    addToCart,
-    decreaseQty,
-    removeFromCart,
-    getTotal,
-    isCartOpen,
-    setIsCartOpen,
-  } = useCart();
+  cart,
+  isCartOpen,
+  setIsCartOpen,
+  increaseQty,
+  decreaseQty,
+  removeFromCart,
+  getTotal,
+} = useCart();
 
   const navigate = useNavigate();
 
@@ -19,90 +19,66 @@ function CartDrawer() {
     <AnimatePresence>
       {isCartOpen && (
         <>
-          {/* 🌫️ Overlay */}
+          {/* 🌑 BACKDROP */}
           <motion.div
-            className="drawer-overlay"
+            className="cart-backdrop"
+            onClick={() => setIsCartOpen(false)}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => setIsCartOpen(false)}
           />
 
-          {/* 🧺 Drawer */}
+          {/* 🧺 DRAWER */}
           <motion.div
             className="cart-drawer"
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
-            transition={{
-              type: "spring",
-              stiffness: 260,
-              damping: 28,
-            }}
+            transition={{ type: "tween" }}
           >
-            {/* Header */}
-            <div className="drawer-header">
-              <h2>Your Basket 🧺</h2>
+            <h2>My Basket 🧺</h2>
 
-              <button onClick={() => setIsCartOpen(false)}>
-                ✕
-              </button>
-            </div>
-
-            {/* Empty state */}
             {cart.length === 0 ? (
-              <p className="empty-cart">
-                Your basket is empty 🌷
-              </p>
+              <p>Your cart is empty 🌷</p>
             ) : (
               <>
-                {/* Items */}
-                <div className="drawer-items">
+                <div className="cart-items">
                   {cart.map((item) => (
-                    <div key={item.id} className="drawer-item">
+                    <div key={item.id} className="cart-item">
+
                       <img src={item.image} alt={item.name} />
 
-                      <div className="item-info">
-                        <h4>{item.name}</h4>
+                      <div className="cart-info">
+                        <p className="name">{item.name}</p>
+                        <p className="price">Rs {item.price}</p>
 
-                        <p>Rs {item.price}</p>
-
-                        {/* Quantity controls */}
+                        {/* ➕➖ QUANTITY CONTROLS */}
                         <div className="qty-controls">
-                          <button
-                            onClick={() => decreaseQty(item.id)}
-                          >
+                          <button onClick={() => decreaseQty(item.id)}>
                             −
                           </button>
 
                           <span>{item.qty}</span>
 
-                          <button
-                            onClick={() => addToCart(item)}
-                          >
+                          <button onClick={() => increaseQty(item.id)}>
                             +
                           </button>
                         </div>
-                      </div>
 
-                      {/* Remove item */}
-                      <button
-                        className="remove-btn"
-                        onClick={() => removeFromCart(item.id)}
-                      >
-                        ✕
-                      </button>
+                        <button
+                          className="remove-btn"
+                          onClick={() => removeFromCart(item.id)}
+                        >
+                          Remove
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
 
-                {/* Footer */}
-                <div className="drawer-footer">
+                {/* 💰 TOTAL */}
+                <div className="cart-total">
                   <h3>Total: Rs {getTotal()}</h3>
-
-                  <p className="drawer-note">
-                    Shipping & taxes calculated at checkout ✨
-                  </p>
 
                   <button
                     className="checkout-btn"
@@ -111,7 +87,7 @@ function CartDrawer() {
                       navigate("/checkout");
                     }}
                   >
-                    Go to Checkout 🌷
+                    Checkout ✨
                   </button>
                 </div>
               </>

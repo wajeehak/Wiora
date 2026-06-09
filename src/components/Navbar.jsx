@@ -89,17 +89,18 @@ function Navbar() {
             Contact
           </Link>
 
-          {/* 🧺 CART DRAWER BUTTON */}
+          {/* 🧺 CART BUTTON */}
           <button
             id="cart-icon"
             onClick={() => setIsCartOpen(true)}
             style={{
               position: "relative",
-              fontSize: "1.4rem",
+              fontSize: "1.5rem",
               border: "none",
               background: "transparent",
               cursor: "pointer",
               padding: 0,
+              transition: "transform 0.2s ease",
             }}
           >
             🧺

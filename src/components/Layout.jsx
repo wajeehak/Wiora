@@ -4,19 +4,27 @@ import Footer from "./Footer";
 
 function Layout({ children }) {
   return (
-    <div className="layout">
-      {/* 🌷 TOP NAV */}
+    <div
+      className="page-wrapper"
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       <Navbar />
 
-      {/* 🧺 CART OVERLAY (should sit above everything) */}
       <CartDrawer />
 
-      {/* 📄 PAGE CONTENT */}
-      <main className="page-content">
+      <div
+        className="page-container"
+        style={{
+          flex: 1,
+        }}
+      >
         {children}
-      </main>
+      </div>
 
-      {/* 🌸 FOOTER (always last) */}
       <Footer />
     </div>
   );
