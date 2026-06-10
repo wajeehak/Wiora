@@ -10,13 +10,29 @@ import Checkout from "./pages/Checkout";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import OrderSuccess from "./pages/OrderSuccess";
+import Admin from "./pages/Admin";
+import AdminLogin from "./pages/AdminLogin";
+
+import { useAdminAuth } from "./context/AdminAuthContext";
+
+// 🔐 Protected route wrapper
+function ProtectedAdmin({ children }) {
+  const { isAdmin } = useAdminAuth();
+
+  if (!isAdmin) {
+    return <AdminLogin />;
+  }
+
+  return children;
+}
 
 function App() {
   return (
     <BrowserRouter>
-
       <Layout>
         <Routes>
+
+          {/* 🌷 Public Routes */}
           <Route path="/" element={<Home />} />
           <Route path="/shop" element={<Shop />} />
           <Route path="/product/:id" element={<Product />} />
@@ -25,11 +41,21 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/success" element={<OrderSuccess />} />
+
+          {/* 🔐 Protected Admin Route */}
+          <Route
+            path="/admin"
+            element={
+              <ProtectedAdmin>
+                <Admin />
+              </ProtectedAdmin>
+            }
+          />
+
         </Routes>
       </Layout>
-
     </BrowserRouter>
   );
 }
 
-export default App;
+export default App; 

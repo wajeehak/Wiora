@@ -1,11 +1,12 @@
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 function OrderSuccess() {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // 🌷 simple order id generator
-  const orderId = "WIORA-" + Math.floor(100000 + Math.random() * 900000);
+  // 🌷 order data coming from checkout (if passed)
+  const order = location.state?.order;
 
   return (
     <motion.div
@@ -20,10 +21,9 @@ function OrderSuccess() {
         alignItems: "center",
         textAlign: "center",
         padding: "40px",
-        background: "linear-gradient(180deg, #fff7f9, #ffffff)",
       }}
     >
-      {/* 🌷 Success Animation */}
+      {/* 🎉 ICON */}
       <motion.div
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
@@ -40,79 +40,74 @@ function OrderSuccess() {
         Order Confirmed 🌷
       </h1>
 
-      {/* ORDER ID */}
       <p
         style={{
           color: "var(--text-muted)",
-          marginBottom: "14px",
-          fontSize: "0.95rem",
+          maxWidth: "420px",
+          lineHeight: "1.6",
         }}
       >
-        Order ID: <strong>{orderId}</strong>
+        Your handmade pieces are being prepared with love and care.
       </p>
 
-      <p
-        style={{
-          color: "var(--text-muted)",
-          maxWidth: "460px",
-          lineHeight: "1.7",
-        }}
-      >
-        Your handmade pieces are now being carefully prepared in our slow studio.
-        Each item is packed with care, patience, and soft intention 🧵✨
-      </p>
-
-      {/* 🌿 PROCESS STEPS */}
-      <div
-        style={{
-          marginTop: "28px",
-          display: "flex",
-          gap: "18px",
-          flexWrap: "wrap",
-          justifyContent: "center",
-          color: "#555",
-          fontSize: "0.9rem",
-        }}
-      >
-        <span>🧺 Order received</span>
-        <span>→</span>
-        <span>🧵 Being handmade</span>
-        <span>→</span>
-        <span>📦 Packing</span>
-        <span>→</span>
-        <span>🚚 On the way</span>
-      </div>
-
-      {/* BUTTONS */}
-      <div style={{ display: "flex", gap: "12px", marginTop: "30px" }}>
-        <button
-          onClick={() => navigate("/")}
+      {/* 🌿 ORDER DETAILS BOX */}
+      {order && (
+        <div
           style={{
-            padding: "12px 22px",
-            borderRadius: "999px",
-            border: "none",
-            background: "var(--strawberry)",
-            fontWeight: "600",
-            cursor: "pointer",
+            marginTop: "25px",
+            background: "#fff",
+            padding: "20px",
+            borderRadius: "18px",
+            boxShadow: "0 12px 30px rgba(44,39,36,0.06)",
+            width: "100%",
+            maxWidth: "420px",
+            textAlign: "left",
           }}
         >
-          Continue Shopping 🌷
-        </button>
+          <h3 style={{ marginBottom: "10px" }}>
+            Order Details 🧺
+          </h3>
 
-        <button
-          onClick={() => navigate("/shop")}
-          style={{
-            padding: "12px 22px",
-            borderRadius: "999px",
-            border: "1px solid #ddd",
-            background: "white",
-            fontWeight: "600",
-            cursor: "pointer",
-          }}
-        >
-          Explore More
-        </button>
-      </div>
+          <p><strong>Order ID:</strong> {order.id}</p>
+
+          <p style={{ marginTop: "10px" }}>
+            <strong>Total:</strong> Rs {order.total}
+          </p>
+
+          <div style={{ marginTop: "12px" }}>
+            <strong>Items:</strong>
+
+            {order.items.map((item) => (
+              <p
+                key={item.id}
+                style={{
+                  margin: "6px 0",
+                  fontSize: "0.9rem",
+                  color: "#555",
+                }}
+              >
+                {item.name} × {item.qty}
+              </p>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 🌷 BUTTON */}
+      <button
+        onClick={() => navigate("/")}
+        style={{
+          marginTop: "30px",
+          padding: "12px 24px",
+          borderRadius: "999px",
+          border: "none",
+          background: "var(--strawberry)",
+          fontWeight: "600",
+          cursor: "pointer",
+        }}
+      >
+        Back to Home 🌷
+      </button>
     </motion.div>
   );
 }

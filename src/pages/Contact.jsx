@@ -150,7 +150,7 @@ function Contact() {
           }}
         >
           <p>
-            📧 hello@wiora.com
+            📧 bywiora
           </p>
 
           <p>

@@ -1,5 +1,7 @@
-import { useState } from "react";
-import products from "../data/products";
+import { useEffect, useState } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../firebase/firebaseConfig";
+
 import ProductCard from "../components/ProductCard";
 import { motion, AnimatePresence } from "framer-motion";
 import { flyToCart } from "../utils/flyToCart";
@@ -8,8 +10,32 @@ import { useCart } from "../context/CartContext";
 function Shop() {
   const { addToCart } = useCart();
 
+  const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [toast, setToast] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // 🌿 FETCH PRODUCTS FROM FIRESTORE
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const snapshot = await getDocs(collection(db, "products"));
+
+        const data = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        setProducts(data);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+
+      setLoading(false);
+    };
+
+    fetchProducts();
+  }, []);
 
   return (
     <motion.div
@@ -24,6 +50,14 @@ function Shop() {
           <h1>Shop Collection</h1>
           <p>Each piece is handmade in small, slow batches 🌷</p>
         </div>
+
+        {/* 🧺 LOADING STATE */}
+        {loading && <p>Loading products...</p>}
+
+        {/* 🧺 EMPTY STATE */}
+        {!loading && products.length === 0 && (
+          <p>No products yet 🌷</p>
+        )}
 
         {/* 🧺 BOUTIQUE GRID */}
         <div className="shop-grid">
@@ -73,27 +107,22 @@ function Shop() {
               </p>
 
               <p className="modal-desc">
-                Handmade crochet piece crafted slowly with care,
-                softness, and intention 🌷
+                {selectedProduct.description ||
+                  "Handmade crochet piece crafted slowly with care 🌷"}
               </p>
 
-              {/* 🧺 ADD TO CART */}
               <button
                 className="modal-btn"
                 onClick={() => {
                   flyToCart(selectedProduct.image, () => {
-
-                    // Add item to cart
                     addToCart(selectedProduct);
 
-                    // Show toast
                     setToast("Added to basket ✨");
 
                     setTimeout(() => {
                       setToast(null);
                     }, 1200);
 
-                    // Close modal
                     setSelectedProduct(null);
                   });
                 }}

@@ -2,10 +2,14 @@ import { useCart } from "../context/CartContext";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { db } from "../firebase/firebaseConfig";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 function Checkout() {
   const { cart, getTotal, clearCart } = useCart();
   const navigate = useNavigate();
+
+  const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
     email: "",
@@ -25,11 +29,45 @@ function Checkout() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    clearCart();
-    navigate("/success");
+    if (cart.length === 0) return;
+
+    setLoading(true);
+
+    try {
+      const orderData = {
+        customer: form,
+        items: cart,
+        total: getTotal(),
+        createdAt: serverTimestamp(),
+        status: "pending",
+      };
+
+      const docRef = await addDoc(
+        collection(db, "orders"),
+        orderData
+      );
+
+      console.log("Order ID:", docRef.id);
+
+      clearCart();
+      navigate("/success", {
+          state: {
+            order: {
+              id: docRef.id,
+              items: cart,
+              total: getTotal()
+            }
+          }
+        });
+    } catch (error) {
+      console.error("Order failed:", error);
+      alert("Something went wrong while placing order.");
+    }
+
+    setLoading(false);
   };
 
   return (
@@ -43,7 +81,6 @@ function Checkout() {
         justifyContent: "center",
       }}
     >
-      {/* 🌷 MAIN WRAPPER */}
       <div
         style={{
           width: "100%",
@@ -53,7 +90,8 @@ function Checkout() {
           gap: "40px",
         }}
       >
-        {/* 🌸 LEFT: FORM */}
+
+        {/* 🌸 LEFT */}
         <div
           style={{
             background: "#fff",
@@ -62,9 +100,7 @@ function Checkout() {
             boxShadow: "0 12px 30px rgba(44,39,36,0.06)",
           }}
         >
-          <h2 style={{ marginBottom: "12px" }}>
-            Checkout 🌸
-          </h2>
+          <h2>Checkout 🌸</h2>
 
           <p
             style={{
@@ -74,8 +110,7 @@ function Checkout() {
               fontSize: "0.95rem",
             }}
           >
-            Almost there ✨ Enter your details below and we'll prepare your
-            handmade pieces with care.
+            Almost there ✨ Enter your details below and we'll prepare your handmade pieces with care.
           </p>
 
           <form
@@ -86,138 +121,41 @@ function Checkout() {
               gap: "14px",
             }}
           >
-            <h3 style={{ marginBottom: "8px" }}>
-              Contact Information
-            </h3>
 
-            <input
-              name="email"
-              type="email"
-              placeholder="Email Address"
-              value={form.email}
-              onChange={handleChange}
-              required
-              style={inputStyle}
-            />
+            <input name="email" placeholder="Email Address" value={form.email} onChange={handleChange} required style={inputStyle} />
 
-            <h3
-              style={{
-                marginTop: "20px",
-                marginBottom: "8px",
-              }}
-            >
-              Delivery Information
-            </h3>
-
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: "14px",
-              }}
-            >
-              <input
-                name="firstName"
-                placeholder="First Name"
-                value={form.firstName}
-                onChange={handleChange}
-                required
-                style={inputStyle}
-              />
-
-              <input
-                name="lastName"
-                placeholder="Last Name"
-                value={form.lastName}
-                onChange={handleChange}
-                required
-                style={inputStyle}
-              />
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+              <input name="firstName" placeholder="First Name" value={form.firstName} onChange={handleChange} required style={inputStyle} />
+              <input name="lastName" placeholder="Last Name" value={form.lastName} onChange={handleChange} required style={inputStyle} />
             </div>
 
-            <input
-              name="mobile"
-              placeholder="Mobile Number"
-              value={form.mobile}
-              onChange={handleChange}
-              required
-              style={inputStyle}
-            />
+            <input name="mobile" placeholder="Mobile Number" value={form.mobile} onChange={handleChange} required style={inputStyle} />
 
-            <textarea
-              name="address"
-              placeholder="Street Address"
-              value={form.address}
-              onChange={handleChange}
-              required
-              style={{
-                ...inputStyle,
-                height: "90px",
-                resize: "none",
-              }}
-            />
+            <textarea name="address" placeholder="Street Address" value={form.address} onChange={handleChange} required style={{ ...inputStyle, height: "90px" }} />
 
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: "14px",
-              }}
-            >
-              <input
-                name="country"
-                placeholder="Country"
-                value={form.country}
-                onChange={handleChange}
-                required
-                style={inputStyle}
-              />
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+              <input name="country" placeholder="Country" value={form.country} onChange={handleChange} required style={inputStyle} />
 
-              <select
-                  name="province"
-                  value={form.province}
-                  onChange={handleChange}
-                  required
-                  style={inputStyle}
-                >
-                  <option value="">Select Province</option>
-
-                  <option value="Sindh">Sindh</option>
-                  <option value="Punjab">Punjab</option>
-                  <option value="Khyber Pakhtunkhwa">
-                    Khyber Pakhtunkhwa
-                  </option>
-                  <option value="Balochistan">
-                    Balochistan
-                  </option>
-                  <option value="Gilgit Baltistan">
-                    Gilgit Baltistan
-                  </option>
-                  <option value="Azad Kashmir">
-                    Azad Kashmir
-                  </option>
-                </select>
+              <select name="province" value={form.province} onChange={handleChange} required style={inputStyle}>
+                <option value="">Select Province</option>
+                <option value="Sindh">Sindh</option>
+                <option value="Punjab">Punjab</option>
+                <option value="KPK">Khyber Pakhtunkhwa</option>
+                <option value="Balochistan">Balochistan</option>
+                <option value="Gilgit Baltistan">Gilgit Baltistan</option>
+                <option value="Azad Kashmir">Azad Kashmir</option>
+              </select>
             </div>
 
-            <input
-              name="city"
-              placeholder="City"
-              value={form.city}
-              onChange={handleChange}
-              required
-              style={inputStyle}
-            />
+            <input name="city" placeholder="City" value={form.city} onChange={handleChange} required style={inputStyle} />
 
-            <button
-              type="submit"
-              style={buttonStyle}
-            >
-              Place Order 🌷
+            <button type="submit" style={buttonStyle} disabled={loading}>
+              {loading ? "Placing Order..." : "Place Order 🌷"}
             </button>
           </form>
         </div>
 
-        {/* 🌿 RIGHT: ORDER SUMMARY */}
+        {/* 🌿 RIGHT */}
         <div
           style={{
             position: "sticky",
@@ -229,89 +167,37 @@ function Checkout() {
             boxShadow: "0 12px 30px rgba(44,39,36,0.06)",
           }}
         >
-          <h3 style={{ marginBottom: "16px" }}>
-            Order Summary 🧺
-          </h3>
+          <h3>Order Summary 🧺</h3>
 
           {cart.length === 0 ? (
-            <p style={{ color: "#777" }}>
-              Your basket is empty 🌷
-            </p>
+            <p>Your basket is empty 🌷</p>
           ) : (
             <>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "10px",
-                  marginBottom: "16px",
-                }}
-              >
-                {cart.map((item) => (
-  <div
-    key={item.id}
-    style={{
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      gap: "12px",
-      paddingBottom: "12px",
-      borderBottom: "1px solid #f1f1f1",
-    }}
-  >
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: "12px",
-      }}
-    >
-      <img
-        src={item.image}
-        alt={item.name}
-        style={{
-          width: "52px",
-          height: "52px",
-          objectFit: "cover",
-          borderRadius: "12px",
-        }}
-      />
+              {cart.map((item) => (
+                <div
+                  key={item.id}
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "12px",
+                  }}
+                >
+                  <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                    <img src={item.image} style={{ width: 45, height: 45, borderRadius: 10 }} />
+                    <div>
+                      <p style={{ margin: 0, fontWeight: 600 }}>{item.name}</p>
+                      <p style={{ margin: 0, fontSize: 12, color: "#777" }}>Qty: {item.qty}</p>
+                    </div>
+                  </div>
 
-      <div>
-        <p
-          style={{
-            fontWeight: "600",
-            margin: 0,
-            fontSize: "0.92rem",
-          }}
-        >
-          {item.name}
-        </p>
+                  <strong>Rs {item.price * item.qty}</strong>
+                </div>
+              ))}
 
-        <p
-          style={{
-            margin: "4px 0 0",
-            color: "#777",
-            fontSize: "0.85rem",
-          }}
-        >
-          Qty: {item.qty}
-        </p>
-      </div>
-    </div>
+              <hr />
 
-    <strong>
-      Rs {item.price * item.qty}
-    </strong>
-  </div>
-))}
-              </div>
-
-              <hr style={{ margin: "10px 0" }} />
-
-              <h3 style={{ marginTop: "10px" }}>
-                Total: Rs {getTotal()}
-              </h3>
+              <h3>Total: Rs {getTotal()}</h3>
             </>
           )}
         </div>
@@ -326,8 +212,6 @@ const inputStyle = {
   border: "1px solid #e6e6e6",
   outline: "none",
   fontSize: "0.95rem",
-  fontFamily: "Quicksand",
-  background: "#fff",
   width: "100%",
 };
 
@@ -340,7 +224,6 @@ const buttonStyle = {
   color: "#fff",
   fontWeight: "600",
   cursor: "pointer",
-  transition: "0.25s ease",
 };
 
 export default Checkout;
