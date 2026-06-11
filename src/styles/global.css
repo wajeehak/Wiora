@@ -1336,24 +1336,44 @@ html {
 
 @media (max-width: 768px) {
 
+  /* NAV CONTAINER */
+  .navbar-inner {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 70px;
+    width: 100%;
+  }
+
+  /* HAMBURGER (LEFT FIXED) */
   .menu-btn {
+    position: absolute;
+    left: 16px;
+
     display: block;
     border: none;
     background: transparent;
+
     font-size: 1.8rem;
     cursor: pointer;
     color: var(--matcha);
   }
 
+  /* CART (RIGHT FIXED) */
   .mobile-cart-btn {
+    position: absolute;
+    right: 16px;
+
     display: block;
-    position: relative;
     border: none;
     background: transparent;
+
     font-size: 1.5rem;
     cursor: pointer;
   }
 
+  /* Hide desktop nav */
   .navbar-links .nav-link {
     display: none;
   }
@@ -1362,17 +1382,23 @@ html {
     display: none;
   }
 
-  .navbar-inner {
+  /* CENTER BRAND */
+  .navbar-brand {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
   }
 
-  .brand-subtitle {
+  /* CLEAN MOBILE BRAND */
+  .navbar-logo {
     display: none;
   }
 
-  .navbar-logo {
+  .brand-subtitle {
     display: none;
   }
 
@@ -1381,7 +1407,7 @@ html {
   }
 }
 
-/* Sidebar */
+/* ================= SIDEBAR ================= */
 
 .mobile-overlay {
   position: fixed;
