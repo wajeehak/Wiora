@@ -1,14 +1,73 @@
 import products from "../data/products";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useRef } from "react";
 import { fadeUp } from "../utils/animations";
 
 function Home() {
   const navigate = useNavigate();
+  const carouselRef = useRef(null);
+
+  useEffect(() => {
+    const carousel = carouselRef.current;
+
+    if (!carousel) return;
+
+    let animationId;
+    let paused = false;
+
+    const speed = 0.4;
+
+    const animate = () => {
+      if (!paused) {
+        carousel.scrollLeft += speed;
+
+        const singleSetWidth =
+          carousel.scrollWidth / 3;
+
+        if (carousel.scrollLeft >= singleSetWidth) {
+          carousel.scrollLeft -= singleSetWidth;
+        }
+      }
+
+      animationId = requestAnimationFrame(animate);
+    };
+
+    animationId = requestAnimationFrame(animate);
+
+    const pause = () => {
+      paused = true;
+    };
+
+    const resume = () => {
+      paused = false;
+    };
+
+    carousel.addEventListener("mouseenter", pause);
+    carousel.addEventListener("mouseleave", resume);
+
+    carousel.addEventListener("touchstart", pause);
+    carousel.addEventListener("touchend", resume);
+
+    return () => {
+      cancelAnimationFrame(animationId);
+
+      carousel.removeEventListener("mouseenter", pause);
+      carousel.removeEventListener("mouseleave", resume);
+
+      carousel.removeEventListener("touchstart", pause);
+      carousel.removeEventListener("touchend", resume);
+    };
+  }, []);
+
+  const featuredProducts = [
+    ...products,
+    ...products,
+    ...products,
+  ];
 
   return (
     <div style={{ paddingBottom: "40px" }}>
-
       {/* 🌸 HERO SECTION */}
       <section className="home-hero">
         <motion.h1
@@ -25,12 +84,13 @@ function Home() {
           animate="show"
           transition={{ delay: 0.1 }}
         >
-          WIORA is a handmade crochet space where every piece is crafted with care,
-          warmth, and slow living energy.
+          WIORA is a handmade crochet space where every
+          piece is crafted with care, warmth, and slow
+          living energy.
         </motion.p>
       </section>
 
-      {/* 🧺 BEST SELLERS SECTION */}
+      {/* 🧺 MOST LOVED PIECES */}
       <section className="section bg-pink">
         <motion.h2
           variants={fadeUp}
@@ -41,32 +101,39 @@ function Home() {
           Most Loved Pieces
         </motion.h2>
 
-        <div className="grid">
-          {products.slice(0, 3).map((p, i) => (
-            <motion.div
-              key={p.id}
-              className="card"
-              variants={fadeUp}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ delay: i * 0.08 }}
-            >
-              <img src={p.image} alt={p.name} />
+        <div className="carousel-wrapper">
+          <div
+            className="carousel"
+            ref={carouselRef}
+          >
+            {featuredProducts.map((p, i) => (
+              <motion.div
+                key={`${p.id}-${i}`}
+                className="carousel-card"
+                variants={fadeUp}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true }}
+              >
+                <img
+                  src={p.image}
+                  alt={p.name}
+                />
 
-              <p className="name">
-                {p.name}
-              </p>
+                <p className="name">
+                  {p.name}
+                </p>
 
-              <p className="price">
-                Rs {p.price}
-              </p>
-            </motion.div>
-          ))}
+                <p className="price">
+                  Rs {p.price}
+                </p>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* 🌿 COLLECTIONS SECTION */}
+      {/* 🌿 COLLECTIONS */}
       <section className="section bg-matcha">
         <motion.h2
           variants={fadeUp}
@@ -88,7 +155,10 @@ function Home() {
               key={i}
               className="collection-card"
               initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              whileInView={{
+                opacity: 1,
+                y: 0,
+              }}
               viewport={{ once: true }}
               transition={{
                 duration: 0.4,
@@ -101,11 +171,14 @@ function Home() {
         </div>
       </section>
 
-      {/* 🌿 OUR STORY SECTION */}
+      {/* 🌿 OUR STORY */}
       <section className="section bg-white">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          whileInView={{
+            opacity: 1,
+            y: 0,
+          }}
           viewport={{ once: true }}
         >
           Our Story
@@ -113,7 +186,10 @@ function Home() {
 
         <motion.p
           initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          whileInView={{
+            opacity: 1,
+            y: 0,
+          }}
           viewport={{ once: true }}
           transition={{ delay: 0.1 }}
           style={{
@@ -123,17 +199,21 @@ function Home() {
             margin: "0",
           }}
         >
-          WIORA started as a slow creative space where crochet became a way to
-          express calm, softness, and intentional living. Every piece tells a
-          story of patience.
+          WIORA started as a slow creative space where
+          crochet became a way to express calm,
+          softness, and intentional living. Every piece
+          tells a story of patience.
         </motion.p>
       </section>
 
-      {/* 🧵 WHY CHOOSE US SECTION */}
+      {/* 🧵 WHY WIORA */}
       <section className="section bg-butter">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          whileInView={{
+            opacity: 1,
+            y: 0,
+          }}
           viewport={{ once: true }}
         >
           Why WIORA
@@ -148,10 +228,18 @@ function Home() {
           ].map((item, i) => (
             <motion.div
               key={i}
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{
+                opacity: 0,
+                y: 15,
+              }}
+              whileInView={{
+                opacity: 1,
+                y: 0,
+              }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.05 }}
+              transition={{
+                delay: i * 0.05,
+              }}
               className="collection-card"
               style={{
                 cursor: "default",
@@ -165,11 +253,14 @@ function Home() {
         </div>
       </section>
 
-      {/* 🌷 CALL TO ACTION */}
+      {/* 🌷 CTA */}
       <section className="cta">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          whileInView={{
+            opacity: 1,
+            y: 0,
+          }}
           viewport={{ once: true }}
         >
           Find something soft for yourself 🌷
@@ -182,7 +273,6 @@ function Home() {
           Shop Now
         </motion.button>
       </section>
-
     </div>
   );
 }

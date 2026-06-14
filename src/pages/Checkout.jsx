@@ -81,15 +81,7 @@ function Checkout() {
         justifyContent: "center",
       }}
     >
-      <div
-        style={{
-          width: "100%",
-          maxWidth: "1000px",
-          display: "grid",
-          gridTemplateColumns: "1.2fr 0.8fr",
-          gap: "40px",
-        }}
-      >
+      <div className="checkout-grid">
 
         {/* 🌸 LEFT */}
         <div
