@@ -8,9 +8,9 @@ function Home() {
   const navigate = useNavigate();
   const carouselRef = useRef(null);
 
+  // 🌷 Auto scrolling carousel (unchanged but stable)
   useEffect(() => {
     const carousel = carouselRef.current;
-
     if (!carousel) return;
 
     let animationId;
@@ -22,8 +22,7 @@ function Home() {
       if (!paused) {
         carousel.scrollLeft += speed;
 
-        const singleSetWidth =
-          carousel.scrollWidth / 3;
+        const singleSetWidth = carousel.scrollWidth / 3;
 
         if (carousel.scrollLeft >= singleSetWidth) {
           carousel.scrollLeft -= singleSetWidth;
@@ -35,189 +34,89 @@ function Home() {
 
     animationId = requestAnimationFrame(animate);
 
-    const pause = () => {
-      paused = true;
-    };
-
-    const resume = () => {
-      paused = false;
-    };
+    const pause = () => (paused = true);
+    const resume = () => (paused = false);
 
     carousel.addEventListener("mouseenter", pause);
     carousel.addEventListener("mouseleave", resume);
-
     carousel.addEventListener("touchstart", pause);
     carousel.addEventListener("touchend", resume);
 
-    return () => {
-      cancelAnimationFrame(animationId);
-
-      carousel.removeEventListener("mouseenter", pause);
-      carousel.removeEventListener("mouseleave", resume);
-
-      carousel.removeEventListener("touchstart", pause);
-      carousel.removeEventListener("touchend", resume);
-    };
+    return () => cancelAnimationFrame(animationId);
   }, []);
 
-  const featuredProducts = [
-    ...products,
-    ...products,
-    ...products,
+  const featuredProducts = [...products, ...products, ...products];
+
+  // 🌷 category mapping (IMPORTANT)
+  const categories = [
+    { label: "🧷 Keychains & Bag Charms", value: "keychains" },
+    { label: "👜 Bags", value: "bags" },
+    { label: "🌸 Flowers & Bouquets", value: "flowers" },
+    { label: "☕ Coasters", value: "coasters" },
   ];
 
   return (
     <div style={{ paddingBottom: "40px" }}>
-      {/* 🌸 HERO SECTION */}
+
+      {/* HERO */}
       <section className="home-hero">
-        <motion.h1
-          variants={fadeUp}
-          initial="hidden"
-          animate="show"
-        >
+        <motion.h1 variants={fadeUp} initial="hidden" animate="show">
           Soft things, made slowly 🌷
         </motion.h1>
 
-        <motion.p
-          variants={fadeUp}
-          initial="hidden"
-          animate="show"
-          transition={{ delay: 0.1 }}
-        >
-          WIORA is a handmade crochet space where every
-          piece is crafted with care, warmth, and slow
-          living energy.
+        <motion.p variants={fadeUp} initial="hidden" animate="show">
+          WIORA is a handmade crochet space where every piece is crafted with care.
         </motion.p>
       </section>
 
-      {/* 🧺 MOST LOVED PIECES */}
+      {/* CAROUSEL */}
       <section className="section bg-pink">
-        <motion.h2
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.3 }}
-        >
-          Most Loved Pieces
-        </motion.h2>
+        <motion.h2>Most Loved Pieces</motion.h2>
 
         <div className="carousel-wrapper">
-          <div
-            className="carousel"
-            ref={carouselRef}
-          >
+          <div className="carousel" ref={carouselRef}>
             {featuredProducts.map((p, i) => (
-              <motion.div
-                key={`${p.id}-${i}`}
-                className="carousel-card"
-                variants={fadeUp}
-                initial="hidden"
-                whileInView="show"
-                viewport={{ once: true }}
-              >
-                <img
-                  src={p.image}
-                  alt={p.name}
-                />
-
-                <p className="name">
-                  {p.name}
-                </p>
-
-                <p className="price">
-                  Rs {p.price}
-                </p>
-              </motion.div>
+              <div key={`${p.id}-${i}`} className="carousel-card">
+                <img src={p.image} alt={p.name} />
+                <p className="name">{p.name}</p>
+                <p className="price">Rs {p.price}</p>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* 🌿 COLLECTIONS */}
+      {/* 🌿 CATEGORIES (CLICKABLE FIXED) */}
       <section className="section bg-matcha">
-        <motion.h2
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true }}
-        >
-          Browse Collections
-        </motion.h2>
+        <motion.h2>Browse Collections</motion.h2>
 
         <div className="collection-grid">
-          {[
-            "🌷 Hair Accessories",
-            "🧵 Keychains",
-            "☕ Coasters",
-            "🎁 Gift Sets",
-          ].map((item, i) => (
+          {categories.map((cat, i) => (
             <motion.div
               key={i}
               className="collection-card"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{
-                opacity: 1,
-                y: 0,
-              }}
-              viewport={{ once: true }}
-              transition={{
-                duration: 0.4,
-                delay: i * 0.05,
-              }}
+              style={{ cursor: "pointer" }}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => navigate(`/shop?category=${cat.value}`)}
             >
-              {item}
+              {cat.label}
             </motion.div>
           ))}
         </div>
       </section>
 
-      {/* 🌿 OUR STORY */}
+      {/* STORY */}
       <section className="section bg-white">
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{
-            opacity: 1,
-            y: 0,
-          }}
-          viewport={{ once: true }}
-        >
-          Our Story
-        </motion.h2>
-
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{
-            opacity: 1,
-            y: 0,
-          }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.1 }}
-          style={{
-            fontSize: "1.2rem",
-            maxWidth: "580px",
-            color: "var(--text-muted)",
-            margin: "0",
-          }}
-        >
-          WIORA started as a slow creative space where
-          crochet became a way to express calm,
-          softness, and intentional living. Every piece
-          tells a story of patience.
-        </motion.p>
+        <motion.h2>Our Story</motion.h2>
+        <p style={{ maxWidth: "600px", color: "var(--text-muted)" }}>
+          WIORA started as a slow creative space where crochet became calm expression.
+        </p>
       </section>
 
-      {/* 🧵 WHY WIORA */}
+      {/* WHY */}
       <section className="section bg-butter">
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{
-            opacity: 1,
-            y: 0,
-          }}
-          viewport={{ once: true }}
-        >
-          Why WIORA
-        </motion.h2>
+        <motion.h2>Why WIORA</motion.h2>
 
         <div className="why-grid">
           {[
@@ -226,50 +125,18 @@ function Home() {
             "🧺 Slow crafted aesthetic",
             "🎀 Soft gifting experience",
           ].map((item, i) => (
-            <motion.div
-              key={i}
-              initial={{
-                opacity: 0,
-                y: 15,
-              }}
-              whileInView={{
-                opacity: 1,
-                y: 0,
-              }}
-              viewport={{ once: true }}
-              transition={{
-                delay: i * 0.05,
-              }}
-              className="collection-card"
-              style={{
-                cursor: "default",
-                padding: "24px 15px",
-                fontSize: "1rem",
-              }}
-            >
+            <div key={i} className="collection-card">
               {item}
-            </motion.div>
+            </div>
           ))}
         </div>
       </section>
 
-      {/* 🌷 CTA */}
+      {/* CTA */}
       <section className="cta">
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{
-            opacity: 1,
-            y: 0,
-          }}
-          viewport={{ once: true }}
-        >
-          Find something soft for yourself 🌷
-        </motion.h2>
+        <motion.h2>Find something soft for yourself 🌷</motion.h2>
 
-        <motion.button
-          whileTap={{ scale: 0.97 }}
-          onClick={() => navigate("/shop")}
-        >
+        <motion.button onClick={() => navigate("/shop")}>
           Shop Now
         </motion.button>
       </section>

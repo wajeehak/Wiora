@@ -28,6 +28,13 @@ function Admin() {
 
   const [editId, setEditId] = useState(null);
 
+  const categories = [
+    "Bags",
+    "Keychains",
+    "Coasters",
+    "Flowers",
+  ];
+
   useEffect(() => {
     fetchOrders();
     fetchProducts();
@@ -90,10 +97,11 @@ function Admin() {
     setDescription(product.description);
     setCategory(product.category);
     setPreview(product.image);
+    setImage(null);
   };
 
   const handleSaveProduct = async () => {
-    if (!name || !price) {
+    if (!name || !price || !category) {
       alert("Please fill required fields");
       return;
     }
@@ -157,8 +165,7 @@ function Admin() {
 
   return (
     <motion.div className="admin-container">
-
-      {/* 🌿 TOP BAR (FIXED LOGOUT HERE) */}
+      {/* 🌿 TOP BAR */}
       <div
         style={{
           display: "flex",
@@ -208,8 +215,12 @@ function Admin() {
         <div>
           {orders.map((order) => (
             <div className="order-card" key={order.id}>
-              <p><strong>Order:</strong> {order.id}</p>
-              <p><strong>Total:</strong> Rs {order.total}</p>
+              <p>
+                <strong>Order:</strong> {order.id}
+              </p>
+              <p>
+                <strong>Total:</strong> Rs {order.total}
+              </p>
             </div>
           ))}
         </div>
@@ -218,7 +229,6 @@ function Admin() {
       {/* PRODUCTS */}
       {activeTab === "products" && (
         <div className="admin-grid">
-
           {/* FORM */}
           <div className="admin-card">
             <h3>{editId ? "Edit Product ✏️" : "Add Product 🌷"}</h3>
@@ -237,12 +247,19 @@ function Admin() {
               onChange={(e) => setPrice(e.target.value)}
             />
 
-            <input
+            <select
               className="admin-input"
-              placeholder="Category"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-            />
+            >
+              <option value="">Select Category</option>
+
+              {categories.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
 
             <textarea
               className="admin-input"
@@ -287,11 +304,16 @@ function Admin() {
 
             {products.map((p) => (
               <div key={p.id} className="product-admin-item">
-                <img src={p.image} className="product-admin-thumb" />
+                <img
+                  src={p.image}
+                  alt={p.name}
+                  className="product-admin-thumb"
+                />
 
                 <div>
                   <h4>{p.name}</h4>
                   <p>Rs {p.price}</p>
+                  <p>{p.category}</p>
 
                   <button onClick={() => handleEditClick(p)}>
                     Edit ✏️
@@ -304,7 +326,6 @@ function Admin() {
               </div>
             ))}
           </div>
-
         </div>
       )}
     </motion.div>

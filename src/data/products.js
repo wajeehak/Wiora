@@ -1,6 +1,7 @@
 import bag from "../assets/bag.jpg";
 import keychain from "../assets/keychain.jpg";
 import coaster from "../assets/coaster.jpg";
+import tulip from "../assets/tulip.jpg";
 
 const products = [
   {
@@ -15,14 +16,21 @@ const products = [
     name: "Soft Daisy Keychain",
     price: 450,
     image: keychain,
-    category: "Accessories"
+    category: "keychains"
   },
   {
     id: 3,
     name: "Cozy Pastel Coaster Set",
     price: 800,
     image: coaster,
-    category: "Home"
+    category: "coasters"
+  },
+  {
+  id: 4,
+  name: "Tulip Bouquet",
+  price: 1200,
+  image: tulip,
+  category: "flowers",
   }
 ];
 

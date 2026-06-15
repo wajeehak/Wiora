@@ -6,16 +6,21 @@ import ProductCard from "../components/ProductCard";
 import { motion, AnimatePresence } from "framer-motion";
 import { flyToCart } from "../utils/flyToCart";
 import { useCart } from "../context/CartContext";
+import { useLocation } from "react-router-dom";
 
 function Shop() {
   const { addToCart } = useCart();
+  const location = useLocation();
 
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [toast, setToast] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // 🌿 FETCH PRODUCTS FROM FIRESTORE
+  // 🌿 CATEGORY FILTER FROM URL
+  const params = new URLSearchParams(location.search);
+  const category = params.get("category");
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -37,31 +42,37 @@ function Shop() {
     fetchProducts();
   }, []);
 
+  // 🌿 FILTERED PRODUCTS
+  const filteredProducts = category
+    ? products.filter((p) => p.category === category)
+    : products;
+
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.4 }}
-    >
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <div className="shop-container">
 
         {/* 🌷 HEADER */}
         <div className="shop-header">
-          <h1>Shop Collection</h1>
-          <p>Each piece is handmade in small, slow batches 🌷</p>
+          <h1>
+            {category ? category.toUpperCase() : "Shop Collection"}
+          </h1>
+
+          <p>
+            Each piece is handmade in small, slow batches 🌷
+          </p>
         </div>
 
-        {/* 🧺 LOADING STATE */}
+        {/* 🧺 LOADING */}
         {loading && <p>Loading products...</p>}
 
-        {/* 🧺 EMPTY STATE */}
-        {!loading && products.length === 0 && (
-          <p>No products yet 🌷</p>
+        {/* 🧺 EMPTY */}
+        {!loading && filteredProducts.length === 0 && (
+          <p>No products found 🌷</p>
         )}
 
-        {/* 🧺 BOUTIQUE GRID */}
+        {/* 🧺 GRID */}
         <div className="shop-grid">
-          {products.map((p, i) => (
+          {filteredProducts.map((p, i) => (
             <motion.div
               key={p.id}
               className="shop-item"
@@ -69,7 +80,6 @@ function Shop() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.03 }}
               onClick={() => setSelectedProduct(p)}
-              style={{ cursor: "pointer" }}
             >
               <ProductCard product={p} />
             </motion.div>
@@ -77,7 +87,7 @@ function Shop() {
         </div>
       </div>
 
-      {/* 🌸 QUICK PREVIEW MODAL */}
+      {/* 🌸 MODAL */}
       <AnimatePresence>
         {selectedProduct && (
           <motion.div
@@ -89,16 +99,12 @@ function Shop() {
           >
             <motion.div
               className="modal-content"
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ duration: 0.25 }}
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.9 }}
               onClick={(e) => e.stopPropagation()}
             >
-              <img
-                src={selectedProduct.image}
-                alt={selectedProduct.name}
-              />
+              <img src={selectedProduct.image} />
 
               <h2>{selectedProduct.name}</h2>
 
@@ -116,13 +122,9 @@ function Shop() {
                 onClick={() => {
                   flyToCart(selectedProduct.image, () => {
                     addToCart(selectedProduct);
-
                     setToast("Added to basket ✨");
 
-                    setTimeout(() => {
-                      setToast(null);
-                    }, 1200);
-
+                    setTimeout(() => setToast(null), 1200);
                     setSelectedProduct(null);
                   });
                 }}
@@ -137,13 +139,7 @@ function Shop() {
       {/* 🌸 TOAST */}
       <AnimatePresence>
         {toast && (
-          <motion.div
-            className="cart-toast"
-            initial={{ opacity: 0, y: -10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -8, scale: 0.98 }}
-            transition={{ duration: 0.25 }}
-          >
+          <motion.div className="cart-toast">
             {toast}
           </motion.div>
         )}
