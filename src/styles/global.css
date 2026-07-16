@@ -1075,10 +1075,11 @@ select.admin-input {
 }
 
 .order-card {
-  padding: 15px;
+  background: #fff;
+  padding: 12px;
   border-radius: 12px;
-  background: #fafafa;
   margin-bottom: 10px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
 }
 
 .file-upload-wrapper {
@@ -1685,3 +1686,119 @@ html {
   }
 }
 
+/* ================= PRODUCT CARD GLOW ================= */
+
+.carousel-card,
+.shop-item,
+.product-admin-item {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* soft dreamy glow */
+.carousel-card:hover,
+.shop-item:hover,
+.product-admin-item:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 30px rgba(79, 93, 82, 0.18);
+}
+
+/* subtle image zoom */
+.carousel-card img,
+.shop-item img {
+  transition: transform 0.3s ease;
+}
+
+.carousel-card:hover img,
+.shop-item:hover img {
+  transform: scale(1.05);
+}
+
+/* ================= PRODUCT MODAL ================= */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  padding: 20px;
+}
+
+.modal-content {
+  background: #fff;
+  width: 100%;
+  max-width: 420px;
+  border-radius: 20px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+}
+
+.modal-content img {
+  width: 100%;
+  max-height: 320px;
+  object-fit: cover;
+  border-radius: 14px;
+  margin-bottom: 12px;
+}
+
+.modal-price {
+  font-weight: 600;
+  margin: 8px 0;
+}
+
+.modal-desc {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 14px;
+}
+
+/* category pill */
+.modal-category {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #f2f2f2;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+.quantity-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.quantity-btn {
+  border: none;
+  background: #e8c1c7;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.quantity-value {
+  font-weight: 600;
+  min-width: 20px;
+}
+@keyframes popFade {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.9);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(0) scale(1.05);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-5px) scale(1);
+  }
+}
+
+.cart-toast {
+  animation: popFade 1.2s ease forwards;
+}
